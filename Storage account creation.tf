@@ -17,10 +17,10 @@ resource "azurerm_resource_group" "ravi" {
   location = "West Europe"
 }
 
-# resource "azurerm_resource_group" "ravi1" {
-#   name     = "RKS_rg1"
-#   location = "Central India"
-# }
+resource "azurerm_resource_group" "ravi1" {
+  name     = "RKS_rg1"
+  location = "Central India"
+}
 
 # resource "azurerm_storage_account" "ravistg" {
 #   name                     = "rksstorage"
