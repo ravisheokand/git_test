@@ -7,6 +7,20 @@ variables:
   config_path: '$(System.DefaultWorkingDirectory)'
   OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
 
+parameters:
+  # Parameters to control step execution
+  - name: runInit
+    type: boolean
+    default: true
+
+  - name: runPlan
+    type: boolean
+    default: true
+
+  - name: runApply
+    type: boolean
+    default: true
+
 steps:
 - task: TerraformInstaller@1
   displayName: install
