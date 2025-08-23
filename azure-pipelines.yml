@@ -10,16 +10,19 @@ variables:
 parameters:
   # Parameters to control step execution
   - name: runInit
+    displayName: Run INIT ?
     type: boolean
-    default: true
+    default: false
 
   - name: runPlan
+    displayName: Run PLAN ?
     type: boolean
-    default: true
+    default: false
 
   - name: runApply
+    displayName: Run APPLY ?
     type: boolean
-    default: true
+    default: false
 
 steps:
 - task: TerraformInstaller@1
