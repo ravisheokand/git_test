@@ -6,6 +6,10 @@ terraform {
     }
   }
   backend "azurerm" {
+    resource_group_name   = "DoNotDeleteRg"
+    storage_account_name  = "donotdeletestorage555"
+    container_name        = "tfstate"
+    key                   = "rkstate.tfstate"
   }
 }
 
