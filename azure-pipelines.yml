@@ -1,14 +1,13 @@
 trigger: none
 
-pool: 
- name: SelfAgent_RK
+pool:
+  name: SelfAgent_RK
 
 variables:
   config_path: '$(System.DefaultWorkingDirectory)'
   OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
 
 parameters:
-  # Parameters to control step execution
   - name: runInit
     displayName: Run Init?
     type: boolean
@@ -24,42 +23,63 @@ parameters:
     type: boolean
     default: false
 
-steps:
-- task: TerraformInstaller@1
-  displayName: install
-  inputs:
-    terraformVersion: 'latest'
-
-- task: TerraformTask@5
+jobs:
+- job: init
   displayName: Terraform Init
-  condition: eq(${{ parameters.runInit }}, true)
-  inputs:
-    provider: 'azurerm'
-    command: 'init'
-    workingDirectory: '$(config_path)'
-    backendServiceArm: 'SC_RK'
-    backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-    backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-    backendAzureRmStorageAccountName: 'donotdeletestorage555'
-    backendAzureRmContainerName: 'tfstate'
-    backendAzureRmKey: 'rkstest.tfstate'
+  condition: and(succeeded(), eq('${{ parameters.runInit }}', 'true'))
+  steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: 'latest'
 
-- task: TerraformTask@5
+    - task: TerraformTask@5
+      displayName: Terraform Init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(config_path)'
+        backendServiceArm: 'SC_RK'
+        backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+        backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+        backendAzureRmStorageAccountName: 'donotdeletestorage555'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'rkstest.tfstate'
+
+- job: plan
   displayName: Terraform Plan
-  condition: eq(${{ parameters.runPlan }}, true)
-  inputs:
-    provider: 'azurerm'
-    command: 'plan'
-    workingDirectory: '$(config_path)'
-    environmentServiceNameAzureRM: 'SC_RK'
-    environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+  dependsOn: init
+  condition: and(succeeded(), eq('${{ parameters.runPlan }}', 'true'))
+  steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: 'latest'
 
-- task: TerraformTask@5
+    - task: TerraformTask@5
+      displayName: Terraform Plan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(config_path)'
+        environmentServiceNameAzureRM: 'SC_RK'
+        environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+
+- job: apply
   displayName: Terraform Apply
-  condition: eq(${{ parameters.runApply }}, true)
-  inputs:
-    provider: 'azurerm'
-    command: 'apply'
-    workingDirectory: '$(config_path)'
-    environmentServiceNameAzureRM: 'SC_RK'
-    environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+  dependsOn: plan
+  condition: and(succeeded(), eq('${{ parameters.runApply }}', 'true'))
+  steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: 'latest'
+
+    - task: TerraformTask@5
+      displayName: Terraform Apply
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(config_path)'
+        environmentServiceNameAzureRM: 'SC_RK'
+        environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
