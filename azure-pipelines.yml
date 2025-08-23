@@ -1,0 +1,38 @@
+trigger: none
+
+pool: 
+ name: SelfAgent_RK
+
+steps:
+- task: TerraformInstaller@1
+  displayName: install
+  inputs:
+    terraformVersion: 'latest'
+
+- task: TerraformTask@5
+  displayName: init
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'SC_RK'
+    backendAzureRmOverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
+    backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+    backendAzureRmStorageAccountName: 'donotdeletestorage555'
+    backendAzureRmContainerName: 'tfstate'
+    backendAzureRmKey: 'rkstest.tfstate'
+
+- task: TerraformTask@5
+  displayName: plan
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    environmentServiceNameAzureRM: 'SC_RK'
+    environmentAzureRmOverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
+
+- task: TerraformTask@5
+  displayName: apply
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    environmentServiceNameAzureRM: 'SC_RK'
+    environmentAzureRmOverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
