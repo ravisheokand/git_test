@@ -15,7 +15,7 @@ parameters:
     default: false
 
   - name: runFmt
-    displayName: Run Apply?
+    displayName: Run Fmt?
     type: boolean
     default: false
 
