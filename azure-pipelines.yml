@@ -10,17 +10,17 @@ variables:
 parameters:
   # Parameters to control step execution
   - name: runInit
-    displayName: Run INIT ?
+    displayName: Run Init?
     type: boolean
     default: false
 
   - name: runPlan
-    displayName: Run PLAN ?
+    displayName: Run Plan?
     type: boolean
     default: false
 
   - name: runApply
-    displayName: Run APPLY ?
+    displayName: Run Apply?
     type: boolean
     default: false
 
@@ -31,7 +31,8 @@ steps:
     terraformVersion: 'latest'
 
 - task: TerraformTask@5
-  displayName: init
+  displayName: Terraform Init
+  condition: eq(${{ parameters.runInit }}, true)
   inputs:
     provider: 'azurerm'
     command: 'init'
@@ -44,7 +45,8 @@ steps:
     backendAzureRmKey: 'rkstest.tfstate'
 
 - task: TerraformTask@5
-  displayName: plan
+  displayName: Terraform Plan
+  condition: eq(${{ parameters.runPlan }}, true)
   inputs:
     provider: 'azurerm'
     command: 'plan'
@@ -53,7 +55,8 @@ steps:
     environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
 
 - task: TerraformTask@5
-  displayName: apply
+  displayName: Terraform Apply
+  condition: eq(${{ parameters.runApply }}, true)
   inputs:
     provider: 'azurerm'
     command: 'apply'
