@@ -3,6 +3,9 @@ trigger: none
 pool: 
  name: SelfAgent_RK
 
+variables:
+  config_path: '$(System.DefaultWorkingDirectory)'
+
 steps:
 - task: TerraformInstaller@1
   displayName: install
@@ -14,6 +17,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'init'
+    workingDirectory: '$(config_path)'
     backendServiceArm: 'SC_RK'
     backendAzureRmOverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
     backendAzureRmResourceGroupName: 'DoNotDeleteRg'
@@ -26,6 +30,7 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'plan'
+    workingDirectory: '$(config_path)'
     environmentServiceNameAzureRM: 'SC_RK'
     environmentAzureRmOverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
 
@@ -34,5 +39,6 @@ steps:
   inputs:
     provider: 'azurerm'
     command: 'apply'
+    workingDirectory: '$(config_path)'
     environmentServiceNameAzureRM: 'SC_RK'
     environmentAzureRmOverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
