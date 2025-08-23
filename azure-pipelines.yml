@@ -5,6 +5,7 @@ pool:
 
 variables:
   config_path: '$(System.DefaultWorkingDirectory)'
+  OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
 
 steps:
 - task: TerraformInstaller@1
@@ -19,7 +20,7 @@ steps:
     command: 'init'
     workingDirectory: '$(config_path)'
     backendServiceArm: 'SC_RK'
-    backendAzureRmOverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
+    backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
     backendAzureRmResourceGroupName: 'DoNotDeleteRg'
     backendAzureRmStorageAccountName: 'donotdeletestorage555'
     backendAzureRmContainerName: 'tfstate'
@@ -32,7 +33,7 @@ steps:
     command: 'plan'
     workingDirectory: '$(config_path)'
     environmentServiceNameAzureRM: 'SC_RK'
-    environmentAzureRmOverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
+    environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
 
 - task: TerraformTask@5
   displayName: apply
@@ -41,4 +42,4 @@ steps:
     command: 'apply'
     workingDirectory: '$(config_path)'
     environmentServiceNameAzureRM: 'SC_RK'
-    environmentAzureRmOverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
+    environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
