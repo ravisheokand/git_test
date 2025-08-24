@@ -77,7 +77,7 @@ steps:
 
 - task: TerraformTask@5
   displayName: Terraform Apply
-  condition: eq(${{ parameters.runApply }}, true)
+  condition: and(succeeded(), eq(${{ parameters.runApply }}, true), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   inputs:
     provider: 'azurerm'
     command: 'apply'
