@@ -77,7 +77,7 @@ stages:
     jobs:
       - job: plan
         displayName: Terraform Plan
-        dependsOn: Init
+        # dependsOn: Init
         steps:
           - task: TerraformTask@5
             displayName: Terraform Plan
