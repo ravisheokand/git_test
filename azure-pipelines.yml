@@ -19,13 +19,6 @@ parameters:
       - true
       - false
 
-  - name: scanning
-    displayName: Scanning?
-    type: string
-    values:
-      - true
-      - false
-
   - name: validation
     displayName: Manual validation?
     type: string
@@ -71,24 +64,6 @@ jobs:
         workingDirectory: '$(config_path)'
         environmentServiceNameAzureRM: 'SC_RK'
         environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-
-- job: ScanningJob
-  displayName: Scanning Job ?
-  condition: and(succeeded(), eq('${{ parameters.scanning }}', 'true'))  
-  pool: 
-    name: SelfAgent_RK
-  steps:
-    - task: tfsec@1
-      inputs:
-        version: 'v1.26.0'
-        dir: '$(System.DefaultWorkingDirectory)'
-
-    # Publish results if needed
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '**/tfsec-results-*.junit'  # Adjust if needed
-        testRunTitle: 'tfsec Scan Results'
 
 - job: Manual_validation
   displayName: Manual Validation
