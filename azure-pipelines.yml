@@ -75,14 +75,14 @@ stages:
     condition: eq('${{ parameters.runplan }}', 'true')  # Only run if runplan is 'true'
     dependsOn: Init
     jobs:
-      - job: Install
-        displayName: Terraform Install
-        steps:
-          - task: TerraformInstaller@1
-            displayName: Install Terraform
-            inputs:
-              terraformVersion: 'latest'
-      - job: Init
+      # - job: Install
+      #   displayName: Terraform Install
+      #   steps:
+      #     - task: TerraformInstaller@1
+      #       displayName: Install Terraform
+      #       inputs:
+      #         terraformVersion: 'latest'
+      # - job: Init
         displayName: Terraform Init
         dependsOn: Install
         steps:
