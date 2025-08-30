@@ -30,9 +30,6 @@ resource "azurerm_storage_account" "ravistg" {
   account_tier              = "Standard"
   account_replication_type = "GRS"
 
-  # Enforce TLS 1.2 or higher communication via HTTPS
-  https_only = true
-
   # Enable logging for the storage account services
   logging {
     version         = "1.0"
