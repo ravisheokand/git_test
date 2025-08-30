@@ -17,13 +17,13 @@ parameters:
     type: boolean
     default: false
 
-  - name: runApply
-    displayName: Run Apply?
+  - name: validation
+    displayName: Manual validation?
     type: boolean
     default: false
 
-  - name: validation
-    displayName: Manual validation?
+  - name: runApply
+    displayName: Run Apply?
     type: boolean
     default: false
 
