@@ -22,6 +22,11 @@ parameters:
     type: boolean
     default: false
 
+  - name: validation
+    displayName: Manual validation?
+    type: boolean
+    default: false
+
 jobs:
 - job: init_plan
   displayName: Terraform Init + Plan
@@ -53,15 +58,21 @@ jobs:
         workingDirectory: '$(config_path)'
         environmentServiceNameAzureRM: 'SC_RK'
         environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
--job: manaul validation
+
+- job: Manual_validation
   displayName: Manual Validation
-  de
-
-
+  dependsOn: init_plan
+  condition: and(succeeded(), eq('${{ parameters.validation }}', 'true'))
+  pool: server
+  steps:
+  - task: ManualValidation@1
+    inputs:
+      notifyUsers: 'ravikumarsheokand1985@gmail.com'
+      instructions: 'Check and approve'
 
 - job: apply
   displayName: Terraform Apply
-  dependsOn: init_plan
+  dependsOn: Manual_validation
   condition: and(succeeded(), eq('${{ parameters.runApply }}', 'true'))
   steps:
     - task: TerraformInstaller@1
