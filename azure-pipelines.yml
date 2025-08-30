@@ -59,6 +59,13 @@ jobs:
         environmentServiceNameAzureRM: 'SC_RK'
         environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
 
+- job: ScanningJob
+  displayName: Scanning Job
+  pool: 
+    name: SelfAgent_RK
+  steps:
+    - 
+
 - job: Manual_validation
   displayName: Manual Validation
   dependsOn: init_plan
