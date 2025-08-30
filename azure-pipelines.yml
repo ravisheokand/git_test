@@ -7,103 +7,27 @@ trigger:
 pool:
   name: SelfAgent_RK
 
-variables:
-  config_path: '$(System.DefaultWorkingDirectory)'
-  OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
+stages:
+  - stage: Init
+    displayName: Init
+    jobs:
+      - job: Init
+        displayName: Terraform Init + Plan
+        steps:
+          - task: TerraformInstaller@1
+            displayName: Install Terraform
+            inputs:
+              terraformVersion: 'latest'
 
-parameters:
-  - name: runInitPlan
-    displayName: Run Init + Plan?
-    type: string
-    values:
-      - true
-      - false
-
-  - name: validation
-    displayName: Manual validation?
-    type: string
-    values:
-      - true
-      - false
-
-  - name: runApply
-    displayName: Run Apply?
-    type: string
-    values:
-      - true
-      - false
-
-jobs:
-- job: init_plan
-  displayName: Terraform Init + Plan
-  condition: and(succeeded(), eq('${{ parameters.runInitPlan }}', 'true'))
-  steps:
-    - task: TerraformInstaller@1
-      displayName: Install Terraform
-      inputs:
-        terraformVersion: 'latest'
-
-    - task: TerraformTask@5
-      displayName: Terraform Init
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        workingDirectory: '$(config_path)'
-        backendServiceArm: 'SC_RK'
-        backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-        backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-        backendAzureRmStorageAccountName: 'donotdeletestorage555'
-        backendAzureRmContainerName: 'tfstate'
-        backendAzureRmKey: 'rkstest.tfstate'
-
-    - task: TerraformTask@5
-      displayName: Terraform Plan
-      inputs:
-        provider: 'azurerm'
-        command: 'plan'
-        workingDirectory: '$(config_path)'
-        environmentServiceNameAzureRM: 'SC_RK'
-        environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-
-- job: Manual_validation
-  displayName: Manual Validation
-  dependsOn: init_plan
-  condition: and(succeeded(), eq('${{ parameters.validation }}', 'true'))
-  pool: server
-  steps:
-  - task: ManualValidation@1
-    inputs:
-      notifyUsers: 'ravikumarsheokand1985@gmail.com'
-      instructions: 'Check and approve'
-
-- job: apply
-  displayName: Terraform Apply
-  dependsOn: Manual_validation
-  condition: and(succeeded(), eq('${{ parameters.runApply }}', 'true'))
-  steps:
-    - task: TerraformInstaller@1
-      displayName: Install Terraform
-      inputs:
-        terraformVersion: 'latest'
-    
-    - task: TerraformTask@5
-      displayName: Terraform Init
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        workingDirectory: '$(config_path)'
-        backendServiceArm: 'SC_RK'
-        backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-        backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-        backendAzureRmStorageAccountName: 'donotdeletestorage555'
-        backendAzureRmContainerName: 'tfstate'
-        backendAzureRmKey: 'rkstest.tfstate'
-
-    - task: TerraformTask@5
-      displayName: Terraform Apply
-      inputs:
-        provider: 'azurerm'
-        command: 'apply'
-        workingDirectory: '$(config_path)'
-        environmentServiceNameAzureRM: 'SC_RK'
-        environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+          - task: TerraformTask@5
+            displayName: Terraform Init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(config_path)'
+              backendServiceArm: 'SC_RK'
+              backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+              backendAzureRmStorageAccountName: 'donotdeletestorage555'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'rkstest.tfstate'
