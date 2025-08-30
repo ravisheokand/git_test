@@ -14,8 +14,10 @@ variables:
 parameters:
   - name: runInitPlan
     displayName: Run Init + Plan?
-    type: boolean
-    default: false
+    type: string
+    values:
+      - true
+      - false
 
   - name: scanning
     displayName: Scanning?
@@ -63,6 +65,24 @@ jobs:
         workingDirectory: '$(config_path)'
         environmentServiceNameAzureRM: 'SC_RK'
         environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+
+- job: ScanningJob
+  displayName: Scanning Job
+  condition: and(succeeded(), eq('${{ parameters.scanning }}', 'true'))  
+  pool: 
+    name: SelfAgent_RK
+  steps:
+    - task: tfsec@1
+      inputs:
+        version: 'v1.26.0'
+        dir: '$(System.DefaultWorkingDirectory)'
+
+    # Publish results if needed
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/tfsec-results-*.junit'  # Adjust if needed
+        testRunTitle: 'tfsec Scan Results'
 
 - job: ScanningJob
   displayName: Scanning Job
