@@ -28,14 +28,4 @@ resource "azurerm_storage_account" "ravistg" {
   resource_group_name       = azurerm_resource_group.ravi.name
   location                 = azurerm_resource_group.ravi.location
   account_tier              = "Standard"
-  account_replication_type = "GRS"
-
-  # Enable logging for the storage account services
-  logging {
-    version         = "1.0"
-    delete          = true  # Enable logging for delete requests
-    read            = true  # Enable logging for read requests
-    write           = true  # Enable logging for write requests
-    retention_days  = 7     # Retention period for logs
-  }
 }
