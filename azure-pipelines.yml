@@ -21,18 +21,24 @@ parameters:
 
   - name: scanning
     displayName: Scanning?
-    type: boolean
-    default: false
+    type: string
+    values:
+      - true
+      - false
 
   - name: validation
     displayName: Manual validation?
-    type: boolean
-    default: false
+    type: string
+    values:
+      - true
+      - false
 
   - name: runApply
     displayName: Run Apply?
-    type: boolean
-    default: false
+    type: string
+    values:
+      - true
+      - false
 
 jobs:
 - job: init_plan
