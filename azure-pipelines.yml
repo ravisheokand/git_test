@@ -123,7 +123,7 @@ stages:
 
   - stage: Apply
     displayName: Apply
-    dependsOn: ManualValidation
+    # dependsOn: ManualValidation
     condition: and(succeeded(), eq('${{ parameters.runapply }}', 'true'))  # Only run if runapply is 'true'
     jobs:
       - job: Install
