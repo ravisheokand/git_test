@@ -29,4 +29,16 @@ resource "azurerm_storage_account" "ravistg" {
   location                 = resource.azurerm_resource_group.ravi.location
   account_tier             = "Standard"
   account_replication_type = "GRS"
+  minimum_tls_version      = "TLS1_2"  # Enforce TLS 1.2 or higher
+
+  # Enable logging for the queue service
+  queue_properties {
+    logging {
+      version = "1.0"         # API version for logging
+      delete = true           # Log delete requests
+      read   = true           # Log read requests
+      write  = true           # Log write requests
+      retention_days = 7      # Retention period for logs
+    }
+  }
 }
