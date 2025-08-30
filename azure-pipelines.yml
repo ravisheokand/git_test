@@ -75,30 +75,6 @@ stages:
     condition: eq('${{ parameters.runplan }}', 'true')  # Only run if runplan is 'true'
     dependsOn: Init
     jobs:
-      # - job: Install
-      #   displayName: Terraform Install
-      #   steps:
-      #     - task: TerraformInstaller@1
-      #       displayName: Install Terraform
-      #       inputs:
-      #         terraformVersion: 'latest'
-      # - job: Init
-        displayName: Terraform Init
-        dependsOn: Install
-        steps:
-          - task: TerraformTask@5
-            displayName: Terraform Init
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              workingDirectory: '$(config_path)'
-              backendServiceArm: 'SC_RK'
-              backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-              backendAzureRmStorageAccountName: 'donotdeletestorage555'
-              backendAzureRmContainerName: 'tfstate'
-              backendAzureRmKey: 'rkstest.tfstate'
-              additionalArgs: '-reconfigure'  # Added this flag to force reinit
       - job: plan
         displayName: Terraform Plan
         dependsOn: Init
@@ -130,33 +106,9 @@ stages:
     # dependsOn: ManualValidation
     condition: and(succeeded(), eq('${{ parameters.runapply }}', 'true'))  # Only run if runapply is 'true'
     jobs:
-      - job: Install
-        displayName: Terraform Install
-        steps:
-          - task: TerraformInstaller@1
-            displayName: Install Terraform
-            inputs:
-              terraformVersion: 'latest'
-      - job: Init
-        displayName: Terraform Init
-        dependsOn: Install
-        steps:
-          - task: TerraformTask@5
-            displayName: Terraform Init
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              workingDirectory: '$(config_path)'
-              backendServiceArm: 'SC_RK'
-              backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-              backendAzureRmStorageAccountName: 'donotdeletestorage555'
-              backendAzureRmContainerName: 'tfstate'
-              backendAzureRmKey: 'rkstest.tfstate'
-              additionalArgs: '-reconfigure'  # Added this flag to force reinit
       - job: Apply
         displayName: Terraform Apply
-        dependsOn: Init
+        # dependsOn: Init
         steps:
           - task: TerraformTask@5
             displayName: Terraform Apply
