@@ -90,17 +90,6 @@ jobs:
         testResultsFiles: '**/tfsec-results-*.junit'  # Adjust if needed
         testRunTitle: 'tfsec Scan Results'
 
-- job: ScanningJob
-  displayName: Scanning Job
-  condition: and(succeeded(), eq('${{ parameters.scanning }}', 'true'))  
-  pool: 
-    name: SelfAgent_RK
-  steps:
-  - task: tfsec@1
-    inputs:
-      version: 'v1.26.0'
-      dir: '$(System.DefaultWorkingDirectory)'
-
 - job: Manual_validation
   displayName: Manual Validation
   dependsOn: init_plan
