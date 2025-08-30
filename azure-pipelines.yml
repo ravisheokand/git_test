@@ -13,16 +13,19 @@ variables:
 
 stages:
   - stage: Init
-    displayName: Init
+    displayName: Initial
     jobs:
-      - job: Init
-        displayName: Terraform Init + Plan
+      - job: Install
+        displayName: Terraform Install
         steps:
           - task: TerraformInstaller@1
             displayName: Install Terraform
             inputs:
               terraformVersion: 'latest'
-
+      - job: Init
+        displayName: Terraform Init
+        dependsOn: Install
+        steps:
           - task: TerraformTask@5
             displayName: Terraform Init
             inputs:
@@ -35,3 +38,20 @@ stages:
               backendAzureRmStorageAccountName: 'donotdeletestorage555'
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'rkstest.tfstate'
+
+  - stage: Plan
+    displayName: Plan
+    dependsOn: Init
+    jobs:
+      - job: plan
+        displayName: Terraform Plan
+        steps:
+          - task: TerraformTask@5
+            displayName: Terraform Plan
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '$(config_path)'
+              environmentServiceNameAzureRM: 'SC_RK'
+              environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+
