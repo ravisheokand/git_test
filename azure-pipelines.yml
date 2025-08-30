@@ -68,7 +68,7 @@ stages:
               backendAzureRmStorageAccountName: 'donotdeletestorage555'
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'rkstest.tfstate'
-              additionalArgs: '-reconfigure'  # <-- Added this flag to force reinit
+              additionalArgs: '-reconfigure'  # Added this flag to force reinit
 
   - stage: Plan
     displayName: Plan
@@ -98,7 +98,7 @@ stages:
               backendAzureRmStorageAccountName: 'donotdeletestorage555'
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'rkstest.tfstate'
-              additionalArgs: '-reconfigure'  # <-- Added this flag to force reinit
+              additionalArgs: '-reconfigure'  # Added this flag to force reinit
       - job: plan
         displayName: Terraform Plan
         dependsOn: Init
@@ -153,7 +153,7 @@ stages:
               backendAzureRmStorageAccountName: 'donotdeletestorage555'
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'rkstest.tfstate'
-              additionalArgs: '-reconfigure'  # <-- Added this flag to force reinit
+              additionalArgs: '-reconfigure'  # Added this flag to force reinit
       - job: Apply
         displayName: Terraform Apply
         dependsOn: Init
