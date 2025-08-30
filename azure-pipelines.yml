@@ -116,9 +116,9 @@ stages:
       - job: Manual_validation
         displayName: Manual Validation
         steps:
-          - task: ManualValidation@2  # Changed to version 2
+          - task: ManualValidation@1
             inputs:
-              notifyUsers: 'ravikumarsheokand1985@gmail.com'
+              notifyUsers: 'erasheo25@gmail.com'
               instructions: 'Check and approve'
 
   - stage: Apply
