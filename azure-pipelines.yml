@@ -11,9 +11,40 @@ variables:
   config_path: '$(System.DefaultWorkingDirectory)'
   OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
 
+parameters:
+  - name: runinit
+    displayName: Run Init?
+    type: string
+    values:
+      - true
+      - false
+
+  - name: runplan
+    displayName: Run Plan?
+    type: string
+    values:
+      - true
+      - false
+
+  - name: validation
+    displayName: Manual Validation?
+    type: string
+    values:
+      - true
+      - false
+
+  - name: runapply
+    displayName: Run Apply?
+    type: string
+    values:
+      - true
+      - false
+
+
 stages:
   - stage: Init
     displayName: Initial
+    condition: eq('${{ parameters.runinit }}', 'true')  # Only run if runinit is 'true'
     jobs:
       - job: Install
         displayName: Terraform Install
@@ -41,8 +72,24 @@ stages:
 
   - stage: Plan
     displayName: Plan
+    condition: eq('${{ parameters.runplan }}', 'true')  # Only run if runplan is 'true'
     dependsOn: Init
     jobs:
+      - job: Init
+        displayName: Terraform Init
+        steps:
+          - task: TerraformTask@5
+            displayName: Terraform Init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(config_path)'
+              backendServiceArm: 'SC_RK'
+              backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+              backendAzureRmStorageAccountName: 'donotdeletestorage555'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'rkstest.tfstate'
       - job: plan
         displayName: Terraform Plan
         steps:
@@ -55,3 +102,17 @@ stages:
               environmentServiceNameAzureRM: 'SC_RK'
               environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
 
+  - stage: Manual Validation
+    displayName: Manual Validation
+    dependsOn: Plan
+    jobs:
+      - job: Manual_validation
+        displayName: Manual Validation
+        dependsOn: init_plan
+        condition: and(succeeded(), eq('${{ parameters.validation }}', 'true'))
+        pool: server
+        steps:
+        - task: ManualValidation@1
+          inputs:
+            notifyUsers: 'ravikumarsheokand1985@gmail.com'
+            instructions: 'Check and approve'
