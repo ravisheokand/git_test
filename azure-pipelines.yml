@@ -83,6 +83,7 @@ stages:
               terraformVersion: 'latest'
       - job: Init
         displayName: Terraform Init
+        dependsOn: Install
         steps:
           - task: TerraformTask@5
             displayName: Terraform Init
@@ -98,6 +99,7 @@ stages:
               backendAzureRmKey: 'rkstest.tfstate'
       - job: plan
         displayName: Terraform Plan
+        dependsOn: Init
         steps:
           - task: TerraformTask@5
             displayName: Terraform Plan
@@ -151,6 +153,7 @@ stages:
               backendAzureRmKey: 'rkstest.tfstate'
       - job: Apply
         displayName: Terraform Apply
+        dependsOn: Init
         steps:
           - task: TerraformTask@5
             displayName: Terraform Apply
