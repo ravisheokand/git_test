@@ -108,18 +108,18 @@ stages:
               environmentServiceNameAzureRM: 'SC_RK'
               environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
 
-  - stage: ManualValidation
-    displayName: Manual Validation
-    dependsOn: Plan
-    condition: and(succeeded(), eq('${{ parameters.validation }}', 'true'))  # Only run if validation is 'true'
-    jobs:
-      - job: Manual_validation
-        displayName: Manual Validation
-        steps:
-          - task: ManualValidation@1  # Explicit versioning to use task 1.0
-            inputs:
-              notifyUsers: 'ravikumarsheokand1985@gmail.com'
-              instructions: 'Check and approve'
+  # - stage: ManualValidation
+  #   displayName: Manual Validation
+  #   dependsOn: Plan
+  #   condition: and(succeeded(), eq('${{ parameters.validation }}', 'true'))  # Only run if validation is 'true'
+  #   jobs:
+  #     - job: Manual_validation
+  #       displayName: Manual Validation
+  #       steps:
+  #         - task: ManualValidation@1  # Explicit versioning to use task 1.0
+  #           inputs:
+  #             notifyUsers: 'ravikumarsheokand1985@gmail.com'
+  #             instructions: 'Check and approve'
 
   - stage: Apply
     displayName: Apply
