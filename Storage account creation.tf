@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~>4.41.0"  # Ensure your provider version supports the features
+      version = "~>4.41.0"
     }
   }
   backend "azurerm" {
@@ -25,7 +25,8 @@ resource "azurerm_resource_group" "ravi" {
 
 resource "azurerm_storage_account" "ravistg" {
   name                     = "ivaanstorage97531"
-  resource_group_name       = azurerm_resource_group.ravi.name
-  location                 = azurerm_resource_group.ravi.location
-  account_tier              = "Standard"
+  resource_group_name      = resource.azurerm_resource_group.ravi.name
+  location                 = resource.azurerm_resource_group.ravi.location
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
 }
