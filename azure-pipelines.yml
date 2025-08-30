@@ -53,6 +53,11 @@ jobs:
         workingDirectory: '$(config_path)'
         environmentServiceNameAzureRM: 'SC_RK'
         environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+-job: manaul validation
+  displayName: Manual Validation
+  de
+
+
 
 - job: apply
   displayName: Terraform Apply
