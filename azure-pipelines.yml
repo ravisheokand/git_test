@@ -73,7 +73,7 @@ jobs:
         environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
 
 - job: ScanningJob
-  displayName: Scanning Job
+  displayName: Scanning Job ?
   condition: and(succeeded(), eq('${{ parameters.scanning }}', 'true'))  
   pool: 
     name: SelfAgent_RK
