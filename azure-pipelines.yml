@@ -51,7 +51,7 @@ jobs:
         backendAzureRmKey: 'rkstest.tfstate'
 
     - task: TerraformTask@5
-      displayName: Terraform Init + Terraform Plan
+      displayName: Terraform Plan
       inputs:
         provider: 'azurerm'
         command: 'plan'
