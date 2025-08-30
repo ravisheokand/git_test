@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~>4.41.0"
+      version = "~>4.41.0"  # Ensure your provider version supports the features
     }
   }
   backend "azurerm" {
@@ -25,20 +25,20 @@ resource "azurerm_resource_group" "ravi" {
 
 resource "azurerm_storage_account" "ravistg" {
   name                     = "ivaanstorage97531"
-  resource_group_name      = resource.azurerm_resource_group.ravi.name
-  location                 = resource.azurerm_resource_group.ravi.location
-  account_tier             = "Standard"
+  resource_group_name       = azurerm_resource_group.ravi.name
+  location                 = azurerm_resource_group.ravi.location
+  account_tier              = "Standard"
   account_replication_type = "GRS"
-  minimum_tls_version      = "TLS1_2"  # Enforce TLS 1.2 or higher
 
-  # Enable logging for the queue service
-  queue_properties {
-    logging {
-      version = "1.0"         # API version for logging
-      delete = true           # Log delete requests
-      read   = true           # Log read requests
-      write  = true           # Log write requests
-      retention_days = 7      # Retention period for logs
-    }
+  # Enforce TLS 1.2 or higher communication via HTTPS
+  https_only = true
+
+  # Enable logging for the storage account services
+  logging {
+    version         = "1.0"
+    delete          = true  # Enable logging for delete requests
+    read            = true  # Enable logging for read requests
+    write           = true  # Enable logging for write requests
+    retention_days  = 7     # Retention period for logs
   }
 }
