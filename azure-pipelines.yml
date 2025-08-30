@@ -116,9 +116,9 @@ stages:
       - job: Manual_validation
         displayName: Manual Validation
         steps:
-          - task: ManualValidation@1
+          - task: ManualValidation@1  # Explicit versioning to use task 1.0
             inputs:
-              notifyUsers: 'erasheo25@gmail.com'
+              notifyUsers: 'ravikumarsheokand1985@gmail.com'
               instructions: 'Check and approve'
 
   - stage: Apply
