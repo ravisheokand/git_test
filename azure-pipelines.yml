@@ -31,6 +31,7 @@ stages:
   displayName: Build Stage (Init + Plan)
   condition: eq('${{ parameters.Build }}', true)
   jobs:
+# Job 1
     - job: terraform_init_fmt_validate
       displayName: Terraform Init + Fmt + Validate
       steps:
@@ -46,12 +47,15 @@ stages:
             workingDirectory: '$(config_path)'
             commandOptions: 'fmt'
             outputTo: 'console'
+            environmentServiceNameAzureRM: 'SC_RK'
+            environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
         - task: TerraformTask@5
           displayName: Terraform Validate
           inputs:
             provider: 'azurerm'
             command: 'validate'
             workingDirectory: '$(config_path)'
+# Job 2
     - job: terraform_init_plan
       dependsOn: terraform_init_fmt_validate
       displayName: Terraform Init + Plan
