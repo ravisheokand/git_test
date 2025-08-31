@@ -12,20 +12,18 @@ variables:
   OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
 
 parameters:
-  - name: runInitPlan
-    displayName: Run Init + Plan?
-    type: boolean
-    default: true
-
-  - name: validation
-    displayName: Manual validation?
-    type: boolean
-    default: false
-
-  - name: runApply
-    displayName: Run Apply?
-    type: boolean
-    default: false
+  - name: Build
+    displayName: Build (Run Init,Validate,Plan) ?
+    type: string
+    values:
+      - true
+      - false
+  - name: Deploy
+    displayName: Deploy(Manual validation + Apply) ?
+    type: string
+    values:
+      - true
+      - false
 
 stages:
 
@@ -34,7 +32,7 @@ stages:
 # ----------------------
 - stage: Build
   displayName: Build Stage (Init + Plan)
-  condition: eq('${{ parameters.runInitPlan }}', true)
+  condition: eq('${{ parameters.Build }}', true)
   jobs:
     - job: terraform_init_plan
       displayName: Terraform Init + Plan
@@ -71,7 +69,7 @@ stages:
 - stage: Deploy
   displayName: Deploy Stage (Manual Validation and Apply)
   dependsOn: Build
-  condition: eq('${{ parameters.runApply }}', true)
+  condition: eq('${{ parameters.Deploy }}', true)
   jobs:
 
     - job: manual_validation
@@ -81,7 +79,7 @@ stages:
       steps:
         - task: ManualValidation@1
           inputs:
-            notifyUsers: 'ravikumarsheokand1985@gmail.com'
+            notifyUsers: 'erashe25@gmail.com'
             instructions: 'Check and approve'
 
     - job: terraform_apply
