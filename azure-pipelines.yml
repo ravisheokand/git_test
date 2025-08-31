@@ -33,11 +33,11 @@ stages:
 # Stage 1: Build
 # ----------------------
 - stage: Build
-  displayName: Build Stage (Init and Plan)
+  displayName: Build Stage (Init + Plan)
   condition: eq('${{ parameters.runInitPlan }}', true)
   jobs:
-    - job: terraform_init
-      displayName: Terraform Init
+    - job: terraform_init_plan
+      displayName: Terraform Init + Plan
       steps:
         - task: TerraformInstaller@1
           displayName: Install Terraform
@@ -56,16 +56,6 @@ stages:
             backendAzureRmStorageAccountName: 'donotdeletestorage555'
             backendAzureRmContainerName: 'tfstate'
             backendAzureRmKey: 'rkstest.tfstate'
-            commandOptions: '-reconfigure'  # <== Fix included here
-
-    - job: terraform_plan
-      displayName: Terraform Plan
-      dependsOn: terraform_init
-      steps:
-        - task: TerraformInstaller@1
-          displayName: Install Terraform
-          inputs:
-            terraformVersion: 'latest'
 
         - task: TerraformTask@5
           displayName: Terraform Plan
@@ -75,7 +65,6 @@ stages:
             workingDirectory: '$(config_path)'
             environmentServiceNameAzureRM: 'SC_RK'
             environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-
 # ----------------------
 # Stage 2: Deploy
 # ----------------------
