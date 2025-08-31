@@ -57,7 +57,6 @@ stages:
               backendAzureRmStorageAccountName: 'donotdeletestorage555'
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'rkstest.tfstate'
-              additionalArgs: '-reconfigure'
           - task: TerraformTask@5
             displayName: Terraform Plan
             inputs:
