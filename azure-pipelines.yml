@@ -92,7 +92,6 @@ stages:
     jobs:
       - job: ApplyJob
         displayName: Terraform Apply
-        dependsOn: Init
         steps:
           - task: TerraformTask@5
             displayName: Terraform Apply
