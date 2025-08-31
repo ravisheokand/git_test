@@ -1,4 +1,4 @@
-trigger: 
+trigger:
   branches:
     include:
       - feature/*
@@ -11,91 +11,111 @@ variables:
   config_path: '$(System.DefaultWorkingDirectory)'
   OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
 
+parameters:
+  - name: runInitPlan
+    displayName: Run Init + Plan?
+    type: boolean
+    default: true
+
+  - name: validation
+    displayName: Manual validation?
+    type: boolean
+    default: false
+
+  - name: runApply
+    displayName: Run Apply?
+    type: boolean
+    default: false
+
 stages:
-  - stage: Build
-    displayName: Init + Plan
-    # condition: eq('${{ parameters.initplan }}', 'true')
-    jobs:
-      - job: TerraformInit
-        displayName: Terraform Init
-        steps:
-          - task: TerraformInstaller@1
-            displayName: Install Terraform
-            inputs:
-              terraformVersion: 'latest'
-          - task: TerraformTask@5
-            displayName: Terraform Init
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              workingDirectory: '$(config_path)'
-              backendServiceArm: 'SC_RK'
-              backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-              backendAzureRmStorageAccountName: 'donotdeletestorage555'
-              backendAzureRmContainerName: 'tfstate'
-              backendAzureRmKey: 'rkstest.tfstate'
+# Stage 1: Build
+- stage: Build
+  displayName: Build Stage (Init and Plan)
+  condition: eq('${{ parameters.runInitPlan }}', true)
+  jobs:
+    - job: terraform_init
+      displayName: Terraform Init
+      steps:
+        - task: TerraformInstaller@1
+          displayName: Install Terraform
+          inputs:
+            terraformVersion: 'latest'
 
-      - job: TerraformPlan
-        displayName: Terraform Plan
-        steps:
-          - task: TerraformInstaller@1
-            displayName: Install Terraform
-            inputs:
-              terraformVersion: 'latest'
-          - task: TerraformTask@5
-            displayName: Terraform Init
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              workingDirectory: '$(config_path)'
-              backendServiceArm: 'SC_RK'
-              backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-              backendAzureRmStorageAccountName: 'donotdeletestorage555'
-              backendAzureRmContainerName: 'tfstate'
-              backendAzureRmKey: 'rkstest.tfstate'
-          - task: TerraformTask@5
-            displayName: Terraform Plan
-            inputs:
-              provider: 'azurerm'
-              command: 'plan'
-              workingDirectory: '$(config_path)'
-              environmentServiceNameAzureRM: 'SC_RK'
-              environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+        - task: TerraformTask@5
+          displayName: Terraform Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(config_path)'
+            backendServiceArm: 'SC_RK'
+            backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+            backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+            backendAzureRmStorageAccountName: 'donotdeletestorage555'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: 'rkstest.tfstate'
 
+    - job: terraform_plan
+      displayName: Terraform Plan
+      dependsOn: terraform_init
+      steps:
+        - task: TerraformInstaller@1
+          displayName: Install Terraform
+          inputs:
+            terraformVersion: 'latest'
 
+        - task: TerraformTask@5
+          displayName: Terraform Plan
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(config_path)'
+            environmentServiceNameAzureRM: 'SC_RK'
+            environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
 
-  - stage: Apply
-    displayName: Apply
-    # condition: and(succeeded(), eq('${{ parameters.runapply }}', 'true'))  # Only run if runapply is 'true'
-    jobs:
-      - job: ApplyJob
-        displayName: Terraform Apply
-        steps:
-          - task: TerraformInstaller@1
-            displayName: Install Terraform
-            inputs:
-              terraformVersion: 'latest'
-          
-          - task: TerraformTask@5
-            displayName: Terraform Init
-            inputs:
-              provider: 'azurerm'
-              command: 'init'
-              workingDirectory: '$(config_path)'
-              backendServiceArm: 'SC_RK'
-              backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-              backendAzureRmStorageAccountName: 'donotdeletestorage555'
-              backendAzureRmContainerName: 'tfstate'
-              backendAzureRmKey: 'rkstest.tfstate'
+# Stage 2: Deploy
+- stage: Deploy
+  displayName: Deploy Stage (Manual Validation and Apply)
+  dependsOn: Build
+  condition: eq('${{ parameters.runApply }}', true)
+  jobs:
+    - job: manual_validation
+      displayName: Manual Validation
+      condition: eq('${{ parameters.validation }}', true)
+      pool: server
+      steps:
+        - task: ManualValidation@1
+          inputs:
+            notifyUsers: 'ravikumarsheokand1985@gmail.com'
+            instructions: 'Check and approve'
 
-          - task: TerraformTask@5
-            displayName: Terraform Apply
-            inputs:
-              provider: 'azurerm'
-              command: 'apply'
-              workingDirectory: '$(config_path)'
-              environmentServiceNameAzureRM: 'SC_RK'
-              environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+    - job: terraform_apply
+      displayName: Terraform Apply
+      dependsOn: manual_validation
+      condition: or(eq('${{ parameters.validation }}', false), succeeded('manual_validation'))
+      steps:
+        - task: TerraformInstaller@1
+          displayName: Install Terraform
+          inputs:
+            terraformVersion: 'latest'
+
+        - task: TerraformTask@5
+          displayName: Terraform Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(config_path)'
+            backendServiceArm: 'SC_RK'
+            backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+            backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+            backendAzureRmStorageAccountName: 'donotdeletestorage555'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: 'rkstest.tfstate'
+
+        - task: TerraformTask@5
+          displayName: Terraform Apply
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: '$(config_path)'
+            environmentServiceNameAzureRM: 'SC_RK'
+            environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
