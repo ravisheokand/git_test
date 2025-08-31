@@ -13,14 +13,7 @@ variables:
 
 parameters:
   - name: runinit
-    displayName: Run Init?
-    type: string
-    values:
-      - true
-      - false
-
-  - name: runplan
-    displayName: Run Plan?
+    displayName: Run Init + Plan?
     type: string
     values:
       - true
@@ -69,12 +62,6 @@ stages:
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'rkstest.tfstate'
               additionalArgs: '-reconfigure'  # Added this flag to force reinit
-
-  - stage: Plan
-    displayName: Plan
-    condition: eq('${{ parameters.runplan }}', 'true')  # Only run if runplan is 'true'
-    dependsOn: Init
-    jobs:
       - job: plan
         displayName: Terraform Plan
         # dependsOn: Init
