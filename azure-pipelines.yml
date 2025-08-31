@@ -11,32 +11,10 @@ variables:
   config_path: '$(System.DefaultWorkingDirectory)'
   OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
 
-parameters:
-  - name: initplan
-    displayName: Run Init + Plan?
-    type: string
-    values:
-      - true
-      - false
-
-  - name: validation
-    displayName: Manual Validation?
-    type: string
-    values:
-      - true
-      - false
-
-  - name: runapply
-    displayName: Run Apply?
-    type: string
-    values:
-      - true
-      - false
-
 stages:
-  - stage: InitPlan
+  - stage: Build
     displayName: Init + Plan
-    condition: eq('${{ parameters.initplan }}', 'true')
+    # condition: eq('${{ parameters.initplan }}', 'true')
     jobs:
       - job: TerraformInit
         displayName: Terraform Init
@@ -45,7 +23,6 @@ stages:
             displayName: Install Terraform
             inputs:
               terraformVersion: 'latest'
-
           - task: TerraformTask@5
             displayName: Terraform Init
             inputs:
@@ -61,9 +38,23 @@ stages:
 
       - job: TerraformPlan
         displayName: Terraform Plan
-        dependsOn: TerraformInit  # This job waits for Init to finish successfully
-        condition: succeeded()
         steps:
+          - task: TerraformInstaller@1
+            displayName: Install Terraform
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTask@5
+            displayName: Terraform Init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(config_path)'
+              backendServiceArm: 'SC_RK'
+              backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+              backendAzureRmStorageAccountName: 'donotdeletestorage555'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'rkstest.tfstate'
           - task: TerraformTask@5
             displayName: Terraform Plan
             inputs:
@@ -72,6 +63,8 @@ stages:
               workingDirectory: '$(config_path)'
               environmentServiceNameAzureRM: 'SC_RK'
               environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+
+
 
   # - stage: ManualValidation
   #   displayName: Manual Validation
@@ -88,7 +81,7 @@ stages:
 
   - stage: Apply
     displayName: Apply
-    condition: and(succeeded(), eq('${{ parameters.runapply }}', 'true'))  # Only run if runapply is 'true'
+    # condition: and(succeeded(), eq('${{ parameters.runapply }}', 'true'))  # Only run if runapply is 'true'
     jobs:
       - job: ApplyJob
         displayName: Terraform Apply
