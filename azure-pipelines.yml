@@ -28,7 +28,10 @@ parameters:
     default: false
 
 stages:
+
+# ----------------------
 # Stage 1: Build
+# ----------------------
 - stage: Build
   displayName: Build Stage (Init and Plan)
   condition: eq('${{ parameters.runInitPlan }}', true)
@@ -53,6 +56,7 @@ stages:
             backendAzureRmStorageAccountName: 'donotdeletestorage555'
             backendAzureRmContainerName: 'tfstate'
             backendAzureRmKey: 'rkstest.tfstate'
+            commandOptions: '-reconfigure'  # <== Fix included here
 
     - job: terraform_plan
       displayName: Terraform Plan
@@ -72,12 +76,15 @@ stages:
             environmentServiceNameAzureRM: 'SC_RK'
             environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
 
+# ----------------------
 # Stage 2: Deploy
+# ----------------------
 - stage: Deploy
   displayName: Deploy Stage (Manual Validation and Apply)
   dependsOn: Build
   condition: eq('${{ parameters.runApply }}', true)
   jobs:
+
     - job: manual_validation
       displayName: Manual Validation
       condition: eq('${{ parameters.validation }}', true)
@@ -110,6 +117,7 @@ stages:
             backendAzureRmStorageAccountName: 'donotdeletestorage555'
             backendAzureRmContainerName: 'tfstate'
             backendAzureRmKey: 'rkstest.tfstate'
+            commandOptions: '-reconfigure'  # <== Fix included here too
 
         - task: TerraformTask@5
           displayName: Terraform Apply
