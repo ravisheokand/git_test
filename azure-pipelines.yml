@@ -35,12 +35,11 @@ parameters:
 
 stages:
   - stage: InitPlan
-    displayName: Initial
-    condition: eq('${{ parameters.initplan }}', 'true')  # Only run if initplan is 'true'
+    displayName: Init + Plan
+    condition: eq('${{ parameters.initplan }}', 'true')
     jobs:
-      - job: InitAndPlanJob
-        displayName: Terraform Init + Plan
-        condition: and(succeeded(), eq('${{ parameters.initplan }}', 'true'))
+      - job: TerraformInit
+        displayName: Terraform Init
         steps:
           - task: TerraformInstaller@1
             displayName: Install Terraform
@@ -60,6 +59,11 @@ stages:
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'rkstest.tfstate'
 
+      - job: TerraformPlan
+        displayName: Terraform Plan
+        dependsOn: TerraformInit  # This job waits for Init to finish successfully
+        condition: succeeded()
+        steps:
           - task: TerraformTask@5
             displayName: Terraform Plan
             inputs:
@@ -71,7 +75,7 @@ stages:
 
   - stage: ManualValidation
     displayName: Manual Validation
-    dependsOn: Init
+    dependsOn: InitPlan
     condition: and(succeeded(), eq('${{ parameters.validation }}', 'true'))  # Only run if validation is 'true'
     jobs:
       - job: Manual_validation
@@ -79,15 +83,14 @@ stages:
         steps:
           - task: ManualValidation@1  # Explicit versioning to use task 1.0
             inputs:
-              notifyUsers: 'ravikumarsheokand1985@gmail.com'
+              notifyUsers: 'erasheo25@gmail.com'
               instructions: 'Check and approve'
 
   - stage: Apply
     displayName: Apply
-    dependsOn: InitPlan
     condition: and(succeeded(), eq('${{ parameters.runapply }}', 'true'))  # Only run if runapply is 'true'
     jobs:
-      - job: Apply
+      - job: ApplyJob
         displayName: Terraform Apply
         dependsOn: Init
         steps:
