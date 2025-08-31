@@ -66,19 +66,6 @@ stages:
 
 
 
-  # - stage: ManualValidation
-  #   displayName: Manual Validation
-  #   dependsOn: InitPlan
-  #   condition: and(succeeded(), eq('${{ parameters.validation }}', 'true'))  # Only run if validation is 'true'
-  #   jobs:
-  #     - job: Manual_validation
-  #       displayName: Manual Validation
-  #       steps:
-  #         - task: ManualValidation@1  # Explicit versioning to use task 1.0
-  #           inputs:
-  #             notifyUsers: 'erasheo25@gmail.com'
-  #             instructions: 'Check and approve'
-
   - stage: Apply
     displayName: Apply
     # condition: and(succeeded(), eq('${{ parameters.runapply }}', 'true'))  # Only run if runapply is 'true'
@@ -86,6 +73,24 @@ stages:
       - job: ApplyJob
         displayName: Terraform Apply
         steps:
+          - task: TerraformInstaller@1
+            displayName: Install Terraform
+            inputs:
+              terraformVersion: 'latest'
+          
+          - task: TerraformTask@5
+            displayName: Terraform Init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(config_path)'
+              backendServiceArm: 'SC_RK'
+              backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+              backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+              backendAzureRmStorageAccountName: 'donotdeletestorage555'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'rkstest.tfstate'
+
           - task: TerraformTask@5
             displayName: Terraform Apply
             inputs:
