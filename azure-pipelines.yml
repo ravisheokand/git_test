@@ -14,13 +14,17 @@ variables:
 parameters:
   - name: Build
     displayName: Build (Run Init,Validate,Plan) ?
-    type: boolean
-    default: false
+    type: string
+    values:
+      - true
+      - false
 
   - name: Deploy
     displayName: Deploy(Manual validation + Apply) ?
-    type: boolean
-    default: false
+    type: string
+    values:
+      - true
+      - false
 
 stages:
 # ----------------------
