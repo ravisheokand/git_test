@@ -64,7 +64,7 @@ stages:
               additionalArgs: '-reconfigure'  # Added this flag to force reinit
       - job: plan
         displayName: Terraform Plan
-        # dependsOn: Init
+        dependsOn: Init
         steps:
           - task: TerraformTask@5
             displayName: Terraform Plan
@@ -77,7 +77,7 @@ stages:
 
   # - stage: ManualValidation
   #   displayName: Manual Validation
-  #   dependsOn: Plan
+  #   dependsOn: Init
   #   condition: and(succeeded(), eq('${{ parameters.validation }}', 'true'))  # Only run if validation is 'true'
   #   jobs:
   #     - job: Manual_validation
@@ -90,7 +90,7 @@ stages:
 
   - stage: Apply
     displayName: Apply
-    # dependsOn: ManualValidation
+    dependsOn: Init
     condition: and(succeeded(), eq('${{ parameters.runapply }}', 'true'))  # Only run if runapply is 'true'
     jobs:
       - job: Apply
