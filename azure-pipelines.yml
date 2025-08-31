@@ -55,6 +55,9 @@ stages:
             provider: 'azurerm'
             command: 'validate'
             workingDirectory: '$(config_path)'
+            environmentServiceNameAzureRM: 'SC_RK'
+            environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+
 # Job 2
     - job: terraform_init_plan
       dependsOn: terraform_init_fmt_validate
