@@ -23,7 +23,6 @@ parameters:
     default: false
 
 stages:
-
 # ----------------------
 # Stage 1: Build
 # ----------------------
@@ -40,6 +39,18 @@ stages:
           inputs:
             terraformVersion: 'latest'
         - task: TerraformTask@5
+          displayName: Terraform Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(config_path)'
+            backendServiceArm: 'SC_RK'
+            backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
+            backendAzureRmResourceGroupName: 'DoNotDeleteRg'
+            backendAzureRmStorageAccountName: 'donotdeletestorage555'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: 'rkstest.tfstate'
+        - task: TerraformTask@5
           displayName: Terraform Format
           inputs:
             provider: 'azurerm'
@@ -49,37 +60,22 @@ stages:
             outputTo: 'console'
             environmentServiceNameAzureRM: 'SC_RK'
             environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-
-        - task: TerraformTask@5
-          displayName: Terraform Init
-          inputs:
-            provider: 'azurerm'
-            command: 'init'
-            workingDirectory: '$(config_path)'
-            backendServiceArm: 'SC_RK'
-            backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
-            backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-            backendAzureRmStorageAccountName: 'donotdeletestorage555'
-            backendAzureRmContainerName: 'tfstate'
-            backendAzureRmKey: 'rkstest.tfstate'
-
         - task: TerraformTask@5
           displayName: Terraform Validate
           inputs:
             provider: 'azurerm'
             command: 'validate'
             workingDirectory: '$(config_path)'
-
 # Job 2
     - job: terraform_init_plan
       dependsOn: terraform_init_fmt_validate
+      condition: succeeded('terraform_init_fmt_validate')
       displayName: Terraform Init + Plan
       steps:
         - task: TerraformInstaller@1
           displayName: Install Terraform
           inputs:
             terraformVersion: 'latest'
-
         - task: TerraformTask@5
           displayName: Terraform Init
           inputs:
@@ -92,7 +88,6 @@ stages:
             backendAzureRmStorageAccountName: 'donotdeletestorage555'
             backendAzureRmContainerName: 'tfstate'
             backendAzureRmKey: 'rkstest.tfstate'
-
         - task: TerraformTask@5
           displayName: Terraform Plan
           inputs:
@@ -104,13 +99,11 @@ stages:
 # ----------------------
 # Stage 2: Deploy
 # ----------------------
-
 - stage: Deploy
   displayName: Deploy Stage (Manual Validation and Apply)
   dependsOn: Build
   condition: eq('${{ parameters.Deploy }}', true)
   jobs:
-
     - job: manual_validation
       displayName: Manual Validation
       pool: server
@@ -119,16 +112,15 @@ stages:
           inputs:
             notifyUsers: 'erashe25@gmail.com'
             instructions: 'Check and approve'
-
     - job: terraform_apply
       displayName: Terraform Apply
       dependsOn: manual_validation
+      condition: succeeded('manual_validation')
       steps:
         - task: TerraformInstaller@1
           displayName: Install Terraform
           inputs:
             terraformVersion: 'latest'
-
         - task: TerraformTask@5
           displayName: Terraform Init
           inputs:
@@ -142,7 +134,6 @@ stages:
             backendAzureRmContainerName: 'tfstate'
             backendAzureRmKey: 'rkstest.tfstate'
             commandOptions: '-reconfigure'
-
         - task: TerraformTask@5
           displayName: Terraform Apply
           inputs:
