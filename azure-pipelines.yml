@@ -15,7 +15,7 @@ parameters:
   - name: Build
     displayName: Build (Run Init,Validate,Plan) ?
     type: boolean
-    default: true
+    default: false
 
   - name: Deploy
     displayName: Deploy(Manual validation + Apply) ?
