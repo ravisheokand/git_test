@@ -40,11 +40,13 @@ stages:
     jobs:
       - job: InitAndPlanJob
         displayName: Terraform Init + Plan
+        condition: and(succeeded(), eq('${{ parameters.runInitPlan }}', 'true'))
         steps:
           - task: TerraformInstaller@1
             displayName: Install Terraform
             inputs:
-              terraformVersion: '1.5.7'  # Recommended: pin to a specific version
+              terraformVersion: 'latest'
+
           - task: TerraformTask@5
             displayName: Terraform Init
             inputs:
@@ -57,6 +59,7 @@ stages:
               backendAzureRmStorageAccountName: 'donotdeletestorage555'
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'rkstest.tfstate'
+
           - task: TerraformTask@5
             displayName: Terraform Plan
             inputs:
