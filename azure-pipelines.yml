@@ -40,7 +40,7 @@ stages:
     jobs:
       - job: InitAndPlanJob
         displayName: Terraform Init + Plan
-        condition: and(succeeded(), eq('${{ parameters.runInitPlan }}', 'true'))
+        condition: and(succeeded(), eq('${{ parameters.initplan }}', 'true'))
         steps:
           - task: TerraformInstaller@1
             displayName: Install Terraform
