@@ -14,16 +14,13 @@ variables:
 parameters:
   - name: Build
     displayName: Build (Run Init,Validate,Plan) ?
-    type: string
-    values:
-      - true
-      - false
+    type: boolean
+    default: true
+
   - name: Deploy
     displayName: Deploy(Manual validation + Apply) ?
-    type: string
-    values:
-      - true
-      - false
+    type: boolean
+    default: false
 
 stages:
 
@@ -42,7 +39,7 @@ stages:
           inputs:
             terraformVersion: 'latest'
         - task: TerraformTask@5
-          displayName: Install Fmt
+          displayName: Terraform Format
           inputs:
             provider: 'azurerm'
             command: 'custom'
@@ -50,14 +47,13 @@ stages:
             commandOptions: 'fmt'
             outputTo: 'console'
         - task: TerraformTask@5
-          displayName: Install Validate
+          displayName: Terraform Validate
           inputs:
             provider: 'azurerm'
             command: 'validate'
             workingDirectory: '$(config_path)'
-
-
     - job: terraform_init_plan
+      dependsOn: terraform_init_fmt_validate
       displayName: Terraform Init + Plan
       steps:
         - task: TerraformInstaller@1
@@ -89,6 +85,7 @@ stages:
 # ----------------------
 # Stage 2: Deploy
 # ----------------------
+
 - stage: Deploy
   displayName: Deploy Stage (Manual Validation and Apply)
   dependsOn: Build
