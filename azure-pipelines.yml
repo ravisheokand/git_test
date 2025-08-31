@@ -12,7 +12,7 @@ variables:
   OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
 
 parameters:
-  - name: runinit
+  - name: initplan
     displayName: Run Init + Plan?
     type: string
     values:
@@ -34,21 +34,17 @@ parameters:
       - false
 
 stages:
-  - stage: Init
+  - stage: InitPlan
     displayName: Initial
-    condition: eq('${{ parameters.runinit }}', 'true')  # Only run if runinit is 'true'
+    condition: eq('${{ parameters.initplan }}', 'true')  # Only run if initplan is 'true'
     jobs:
-      - job: Install
-        displayName: Terraform Install
+      - job: InitAndPlanJob
+        displayName: Terraform Init + Plan
         steps:
           - task: TerraformInstaller@1
             displayName: Install Terraform
             inputs:
-              terraformVersion: 'latest'
-      - job: Init
-        displayName: Terraform Init
-        dependsOn: Install
-        steps:
+              terraformVersion: '1.5.7'  # Recommended: pin to a specific version
           - task: TerraformTask@5
             displayName: Terraform Init
             inputs:
@@ -61,11 +57,7 @@ stages:
               backendAzureRmStorageAccountName: 'donotdeletestorage555'
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'rkstest.tfstate'
-              additionalArgs: '-reconfigure'  # Added this flag to force reinit
-      - job: plan
-        displayName: Terraform Plan
-        dependsOn: Init
-        steps:
+              additionalArgs: '-reconfigure'
           - task: TerraformTask@5
             displayName: Terraform Plan
             inputs:
@@ -90,7 +82,7 @@ stages:
 
   - stage: Apply
     displayName: Apply
-    dependsOn: Init
+    dependsOn: InitPlan
     condition: and(succeeded(), eq('${{ parameters.runapply }}', 'true'))  # Only run if runapply is 'true'
     jobs:
       - job: Apply
