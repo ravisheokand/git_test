@@ -7,11 +7,14 @@ trigger:
 pool:
   name: SelfAgent_RK
 
-variables:
-  config_path: '$(System.DefaultWorkingDirectory)'
-  OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
-
 parameters:
+  - name: environment
+    displayName: Environment
+    type: string
+    values:
+      - dev
+      - prod
+
   - name: Build
     displayName: Build (Run Init,Validate,Plan) ?
     type: string
@@ -25,6 +28,12 @@ parameters:
     values:
       - true
       - false
+
+variables:
+  workDir: '$(System.DefaultWorkingDirectory)/environment/${{parameters.environment}}'
+  config_path: '$(System.DefaultWorkingDirectory)'
+  OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
+
 
 stages:
 # ----------------------
