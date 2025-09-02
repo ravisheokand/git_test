@@ -8,12 +8,12 @@ pool:
   name: SelfAgent_RK
 
 parameters:
-  - name: environment
-    displayName: Environment
-    type: string
-    values:
-      - dev
-      - prod
+  # - name: environment
+  #   displayName: Environment
+  #   type: string
+  #   values:
+  #     - dev
+  #     - prod
 
   - name: Build
     displayName: Build (Run Init,Validate,Plan) ?
@@ -30,10 +30,9 @@ parameters:
       - false
 
 variables:
-  workDir: '$(System.DefaultWorkingDirectory)/environment/${{parameters.environment}}'
+  # workDir: '$(System.DefaultWorkingDirectory)/environment/${{parameters.environment}}'
   config_path: '$(System.DefaultWorkingDirectory)'
   OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
-
 
 stages:
 # ----------------------
@@ -56,6 +55,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'init'
+            # workingDirectory: '$(workDir)'
             workingDirectory: '$(config_path)'
             backendServiceArm: 'SC_RK'
             backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
@@ -68,6 +68,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'custom'
+            # workingDirectory: '$(workDir)'
             workingDirectory: '$(config_path)'
             commandOptions: 'fmt'
             outputTo: 'console'
@@ -78,6 +79,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'validate'
+            # workingDirectory: '$(workDir)'
             workingDirectory: '$(config_path)'
 # Stage 1 Job 2
     - job: terraform_init_plan
@@ -94,6 +96,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'init'
+            # workingDirectory: '$(workDir)'
             workingDirectory: '$(config_path)'
             backendServiceArm: 'SC_RK'
             backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
@@ -106,6 +109,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'plan'
+            # workingDirectory: '$(workDir)'
             workingDirectory: '$(config_path)'
             environmentServiceNameAzureRM: 'SC_RK'
             environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
@@ -141,6 +145,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'init'
+            # workingDirectory: '$(workDir)'
             workingDirectory: '$(config_path)'
             backendServiceArm: 'SC_RK'
             backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
@@ -154,6 +159,7 @@ stages:
           inputs:
             provider: 'azurerm'
             command: 'apply'
+            # workingDirectory: '$(workDir)'
             workingDirectory: '$(config_path)'
             environmentServiceNameAzureRM: 'SC_RK'
             environmentAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
