@@ -15,7 +15,7 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id = "3a45f28c-3b05-4d1b-b640-21585be45e39"
+  subscription_id = "13dfd1e6-6770-4299-b7ea-6aa09b346468"
 }
 
 resource "azurerm_resource_group" "ravi" {
