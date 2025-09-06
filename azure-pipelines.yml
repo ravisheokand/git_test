@@ -32,7 +32,7 @@ parameters:
 variables:
   # workDir: '$(System.DefaultWorkingDirectory)/environment/${{parameters.environment}}'
   config_path: '$(System.DefaultWorkingDirectory)'
-  OverrideSubscriptionID: '3a45f28c-3b05-4d1b-b640-21585be45e39'
+  OverrideSubscriptionID: '13dfd1e6-6770-4299-b7ea-6aa09b346468'
 
 stages:
 # ----------------------
@@ -60,9 +60,9 @@ stages:
             backendServiceArm: 'SC_RK'
             backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
             backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-            backendAzureRmStorageAccountName: 'donotdeletestorage555'
+            backendAzureRmStorageAccountName: 'donotdeletestorage5555'
             backendAzureRmContainerName: 'tfstate'
-            backendAzureRmKey: 'rkstest.tfstate'
+            backendAzureRmKey: 'rks_sep.tfstate'
         - task: TerraformTask@5
           displayName: Terraform Format
           inputs:
@@ -101,9 +101,9 @@ stages:
             backendServiceArm: 'SC_RK'
             backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
             backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-            backendAzureRmStorageAccountName: 'donotdeletestorage555'
+            backendAzureRmStorageAccountName: 'donotdeletestorage5555'
             backendAzureRmContainerName: 'tfstate'
-            backendAzureRmKey: 'rkstest.tfstate'
+            backendAzureRmKey: 'rks_sep.tfstate'
         - task: TerraformTask@5
           displayName: Terraform Plan
           inputs:
@@ -150,9 +150,9 @@ stages:
             backendServiceArm: 'SC_RK'
             backendAzureRmOverrideSubscriptionID: '$(OverrideSubscriptionID)'
             backendAzureRmResourceGroupName: 'DoNotDeleteRg'
-            backendAzureRmStorageAccountName: 'donotdeletestorage555'
+            backendAzureRmStorageAccountName: 'donotdeletestorage5555'
             backendAzureRmContainerName: 'tfstate'
-            backendAzureRmKey: 'rkstest.tfstate'
+            backendAzureRmKey: 'rks_sep.tfstate'
             commandOptions: '-reconfigure'
         - task: TerraformTask@5
           displayName: Terraform Apply
