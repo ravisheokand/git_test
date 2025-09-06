@@ -7,7 +7,7 @@ terraform {
   }
   backend "azurerm" {
     resource_group_name   = "DoNotDeleteRg"
-    storage_account_name  = "donotdeletestorage555"
+    storage_account_name  = "donotdeletestorage5555"
     container_name        = "tfstate"
     key                   = "rkstate.tfstate"
   }
@@ -24,7 +24,7 @@ resource "azurerm_resource_group" "ravi" {
 }
 
 resource "azurerm_storage_account" "ravistg" {
-  name                     = "ivaanstorage97531"
+  name                     = "isstorage97531"
   resource_group_name      = resource.azurerm_resource_group.ravi.name
   location                 = resource.azurerm_resource_group.ravi.location
   account_tier             = "Standard"
