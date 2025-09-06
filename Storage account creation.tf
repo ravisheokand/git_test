@@ -9,7 +9,7 @@ terraform {
     resource_group_name   = "DoNotDeleteRg"
     storage_account_name  = "donotdeletestorage5555"
     container_name        = "tfstate"
-    key                   = "rkstate.tfstate"
+    key                   = "rks_sep.tfstate"
   }
 }
 
